@@ -174,7 +174,7 @@ if __name__ == '__main__':
                 if (args.tfile is not None):
                     args.tfile.write('%s\n' % (i))
                 i_json = json_fix(i)
-                dest.send(i_json)
+                dest.sendall(i_json)
 
             ## check for incomming data - return immediatly even if no
             #   data available
