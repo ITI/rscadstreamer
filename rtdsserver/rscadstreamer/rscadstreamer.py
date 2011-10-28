@@ -87,7 +87,10 @@ def make_scriptlet(data):
     #
     #   for now, just return some arbitraty, but valid rscad
     #   script commands.
-    return ['UpdatePlots;']
+    if data == "kick_the_system"
+        return ['LoadBatch("wscc_9bus_demostate1_KM.sib");']
+    else
+        return ['LoadBatch("wscc_9bus_demostate2.sib");']
 
 
 def handle_incoming(rscad, dest):
