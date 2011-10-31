@@ -42,12 +42,11 @@ Q8 = MeterCapture("Q8");
 Q9 = MeterCapture("Q9");
 
 
-//fprintf(stdmsg, "{'bus_1': {'volts': %g, 'theta': 0}, 'bus_2': {'volts': %g, 'theta': %g}, 'bus_3': {'volts': %g, 'theta': %g}, 'bus_4': {'volts': %g, 'theta': %g}, 'bus_5': {'volts': %g, 'theta': %g}, 'bus_6': {'volts': %g, 'theta': %g}, 'bus_7': {'volts': %g, 'theta': %g}, 'bus_8': {'volts': %g, 'theta': %g}, 'bus_9': {'volts': %g, 'theta': %g}, 'gen_1': {'p': %g, 'q': %g}, 'gen_2': {'p': %g, 'q': %g}, 'gen_3': {'p': %g, 'q': %g}, 'load_5': {'p': %g, 'q': %g}, 'load_6': {'p': %g, 'q': %g}, 'load_8': {'p': %g, 'q': %g}}\n",
-//Vrms1, Vrms2, LA2, Vrms3, LA3, 
-//Vrms4, ANG4, Vrms5, ANG5, 
-//Vrms6, ANG6, Vrms7, ANG7, 
-//Vrms8, ANG8, Vrms9, ANG9, 
-//P1, Q1, P2, Q2, P3, Q3, 
-//P5, Q5, P6, Q6, P8, Q8);
+fprintf(stdmsg, "{'bus_1': {'volts': %g, 'theta': 0}, 'bus_2': {'volts': %g, 'theta': %g}, 'bus_3': {'volts': %g, 'theta': %g}, 'bus_4': {'volts': %g, 'theta': %g}, 'bus_5': {'volts': %g, 'theta': %g}, 'bus_6': {'volts': %g, 'theta': %g}, 'bus_7': {'volts': %g, 'theta': %g}, 'bus_8': {'volts': %g, 'theta': %g}, 'bus_9': {'volts': %g, 'theta': %g}, 'gen_1': {'p': %g, 'q': %g}, 'gen_2': {'p': %g, 'q': %g}, 'gen_3': {'p': %g, 'q': %g}, 'load_5': {'p': %g, 'q': %g}, 'load_6': {'p': %g, 'q': %g}, 'load_8': {'p': %g, 'q': %g}}\n",
+Vrms1, Vrms2, LA2, Vrms3, LA3,
+Vrms4, ANG4, Vrms5, ANG5,
+Vrms6, ANG6, Vrms7, ANG7,
+Vrms8, ANG8, Vrms9, ANG9,
+P1, Q1, P2, Q2, P3, Q3,
+P5, Q5, P6, Q6, P8, Q8);
 
-fprintf(stdmsg, "{'gen_1':{'p':%g}}", P1);
