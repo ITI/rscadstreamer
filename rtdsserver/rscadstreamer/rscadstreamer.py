@@ -87,9 +87,9 @@ def make_scriptlet(data):
     #
     #   for now, just return some arbitraty, but valid rscad
     #   script commands.
-    if data == "kick_the_system"
+    if data == "kick_the_system":
         return ['LoadBatch("wscc_9bus_demostate1_KM.sib");']
-    else
+    else:
         return ['LoadBatch("wscc_9bus_demostate2.sib");']
 
 
@@ -112,7 +112,7 @@ def handle_incoming(rscad, dest):
 
 def json_fix(d):
     d = d.replace("'", '"')
-    return d
+    return d + "\n"
 
 if __name__ == '__main__':
 
