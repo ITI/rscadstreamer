@@ -10,8 +10,8 @@ Vrms8 = MeterCapture("Vrms8");
 Vrms9 = MeterCapture("Vrms9");
 
 float LA2, LA3, ANG4, ANG5, ANG6, ANG7, ANG8, ANG9;
-LA2 = MeterCapture("LA2");
-LA3 = MeterCapture("LA3");
+ANG2 = MeterCapture("ANG2");
+ANG3 = MeterCapture("ANG3");
 ANG4 = MeterCapture("ANG4");
 ANG5 = MeterCapture("ANG5");
 ANG6 = MeterCapture("ANG6");
@@ -23,30 +23,37 @@ float P1, P2, P3, P4, P5, P6, P7, P8, P9;
 P1 = MeterCapture("P1");
 P2 = MeterCapture("P2");
 P3 = MeterCapture("P3");
-P4 = MeterCapture("P4");
-P5 = MeterCapture("P5");
-P6 = MeterCapture("P6");
-P7 = MeterCapture("P7");
-P8 = MeterCapture("P8");
-P9 = MeterCapture("P9");
+P4 = MeterCapture("Pinj4");
+P5 = MeterCapture("Pload5");
+P6 = MeterCapture("Pload6");
+P7 = MeterCapture("Pinj7");
+P8 = MeterCapture("Pload8");
+P9 = MeterCapture("Pinj9");
 
 float Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9;
 Q1 = MeterCapture("Q1");
 Q2 = MeterCapture("Q2");
 Q3 = MeterCapture("Q3");
-Q4 = MeterCapture("Q4");
-Q5 = MeterCapture("Q5");
-Q6 = MeterCapture("Q6");
-Q7 = MeterCapture("Q7");
-Q8 = MeterCapture("Q8");
-Q9 = MeterCapture("Q9");
+Q4 = MeterCapture("Qinj4");
+Q5 = MeterCapture("Qload5");
+Q6 = MeterCapture("Qload6");
+Q7 = MeterCapture("Qinj7");
+Q8 = MeterCapture("Qload8");
+Q9 = MeterCapture("Qinj9");
+
+float pf1, pf2, pf3, pf4, pf5, pf6, pf7, pf8, pf9
+pf1 = MeterCapture("P1");
+pf2 = MeterCapture("P2");
+pf3 = MeterCapture("P3");
+pf4 = MeterCapture("pf4_SE");
+pf5 = MeterCapture("pf5_SE");
+pf6 = MeterCapture("pf6_SE");
+pf7 = MeterCapture("pf7_SE");
+pf8 = MeterCapture("pf8_SE");
+pf9 = MeterCapture("pf9_SE");
 
 
-fprintf(stdmsg, "{'bus_1': {'v': %g, 't': 0,'p':%g, 'q':%g}, 'bus_2': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_3': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_4': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_5': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_6': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_7': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_8': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_9': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'gen_1': {'p': %g, 'q': %g}, 'gen_2': {'p': %g, 'q': %g}, 'gen_3': {'p': %g, 'q': %g}, 'load_5': {'p': %g, 'q': %g}, 'load_6': {'p': %g, 'q': %g}, 'load_8': {'p': %g, 'q': %g}, 'pflow_1':{'p':%g}, 'pflow_2':{'p':%g}, 'pflow_3':{'p':%g}, 'pflow_4':{'p':%g}, 'pflow_5':{'p':%g}, 'pflow_6':{'p':%g}, 'pflow_7':{'p':%g}, 'pflow_8':{'p':%g}, 'pflow_9':{'p':%g}}\n",
-Vrms1, Vrms2, LA2, Vrms3, LA3,
-Vrms4, ANG4, Vrms5, ANG5,
-Vrms6, ANG6, Vrms7, ANG7,
-Vrms8, ANG8, Vrms9, ANG9,
-P1, Q1, P2, Q2, P3, Q3,
-P5, Q5, P6, Q6, P8, Q8);
+fprintf(stdmsg, "{'bus_1': {'v': %g, 't': 0,'p':%g, 'q':%g}, 'bus_2': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_3': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_4': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_5': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_6': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_7': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_8': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'bus_9': {'v': %g, 't': %g,'p':%g, 'q':%g}, 'pflow_1':{'p':%g}, 'pflow_2':{'p':%g}, 'pflow_3':{'p':%g}, 'pflow_4':{'p':%g}, 'pflow_5':{'p':%g}, 'pflow_6':{'p':%g}, 'pflow_7':{'p':%g}, 'pflow_8':{'p':%g}, 'pflow_9':{'p':%g}}\n",
+Vrms1, P1, Q1, Vrms2, ANG2, P2, Q2, Vrms3, ANG3, Q3, Vrms4, ANG4, P4, Q4, Vrms5, ANG5, P5, Q5, Vrms6, ANG6, P6, Q6, Vrms7, ANG7, P7, Q7, Vrms8, ANG8, P8, Q8, Vrms9, ANG9, P9, Q9,
+pf1, pf2, pf3, pf4, pf5, pf6, pf7, pf8, pf9);
 
