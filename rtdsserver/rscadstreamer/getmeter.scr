@@ -41,7 +41,7 @@ Q7 = MeterCapture("Qinj7");
 Q8 = MeterCapture("Qload8");
 Q9 = MeterCapture("Qinj9");
 
-float pf1, pf2, pf3, pf4, pf5, pf6, pf7, pf8, pf9
+float pf1, pf2, pf3, pf4, pf5, pf6, pf7, pf8, pf9;
 pf1 = MeterCapture("P1");
 pf2 = MeterCapture("P2");
 pf3 = MeterCapture("P3");

@@ -87,10 +87,11 @@ def make_scriptlet(data):
     #
     #   for now, just return some arbitraty, but valid rscad
     #   script commands.
+
     if data == "kick_the_system":
-        return ['LoadBatch("wscc_9bus_demostate1_KM.sib");']
+        return ['Stop;',r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case1\wscc_9bus_demostate1.sib");', 'Start;']
     else:
-        return ['LoadBatch("wscc_9bus_demostate2.sib");']
+        return ['Stop;',r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case2\wscc_9bus_demostate2.sib");', 'Start;']
 
 
 def handle_incoming(rscad, dest):
