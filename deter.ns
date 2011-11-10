@@ -1,0 +1,29 @@
+
+set ns [new Simulator]
+source tb_compat.tcl
+
+set victim [$ns node]
+set atacker [$ns node]
+set router [$ns node]
+set rtds [$ns node]
+set control [$ns node]
+
+set lana [$ns make-lan "$router $rtds" 1000Mb 0ms]
+set lanb [$ns make-lan "$router $victim $atacker" 1000Mb 0ms]
+tb-set-noshaping $lana 1
+
+tb-set-hardware $rtds RTDS
+tb-set-node-os $victim victim-demo
+tb-set-node-os $atacker atacker-demo
+tb-set-node-os $router router-demo
+tb-set-node-os $control router-demo
+
+tb-set-node-startcmd $victim "sudo python /share/seer/v160/experiment-setup.py Basic"
+tb-set-node-startcmd $atacker "sudo python /share/seer/v160/experiment-setup.py Basic"
+tb-set-node-startcmd $router "sudo python /share/seer/v160/experiment-setup.py Basic"
+tb-set-node-startcmd $control "sudo python /share/seer/v160/experiment-setup.py Basic"
+
+
+
+$ns rtproto Static
+$ns run
