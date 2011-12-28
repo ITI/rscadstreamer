@@ -1,12 +1,3 @@
-from tornado import ioloop
-
-## module local variants of the EVENT types
-#   obscureing the event loop for plugin devs
-NONE = ioloop.IOLoop.NONE
-READ = ioloop.IOLoop.READ
-WRITE = ioloop.IOLoop.WRITE
-ERROR = ioloop.IOLoop.ERROR
-
 
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
@@ -23,12 +14,12 @@ class RSCADPlugin(object):
 
     ## Every plugin should implement options() to define plugin specific
     # command line options.  If none are needed, this will cover it
-    def options(self):
-        pass
+    def options(self, *arg, **kw): pass
+    def init(self, *arg, **kw): pass
+    def handle_output(self, *arg, **kw): pass
+    def handle_input(self, *arg, **kw): pass
 
-    def register_callback(self, fileno, cb, events):
-        l = ioloop.IOLoop.instance()
-        l.add_handler(fileno, cb, events)
+
 
 
 # Loads the plugins
@@ -49,6 +40,7 @@ def loadPlugins(dirs, plugins, opts):
 
     if plugins is not None:
         for plug in plugins:
+            ## somewhat unsafe
             __import__(plug, globals(), locals(), ['*'], -1)
 
     # Load any plugin defined command line args, and parse
