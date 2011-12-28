@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # Init plugins - set up (e)poll for cases that care
     [poller.register(fileno, select.POLLIN) for fileno in [
-        p.init(plugin_args, loop) for p in RSCADPlugin.plugins] if
+        p.init(plugin_args) for p in RSCADPlugin.plugins] if
         fileno is not None]
 
     # Need to write rscad script to RSCAD before starting the event loop
@@ -67,7 +67,7 @@ if __name__ == '__main__':
             fd = poller.poll(0)
             # loop through plugins calling handle_data
             # it's up to the plugin to make sure the data belongs to it
-            [[p.handle_data(filedes[0], rscad_file) for p in
+            [[p.handle_data(filedes[0], RSCAD) for p in
                 RSCADPlugin.plugins] for filedes in fd]
 
             time.sleep(args.sleeptime)
