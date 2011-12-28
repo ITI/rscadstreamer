@@ -1,26 +1,31 @@
 import socket
 
+class RSCADNotImplementedException(Exception): pass
+
+# factory method that returns the correct rscad source object
+def rscadfactory(ip, file):
+    # Arg parse will only allow ip or file.
+    # cannot be both, nor neither
+    if ip is not None:
+        # Must be real rscad
+        return RSCAD(ipport=ip)
+    else:
+        # Must be replay data
+        return rscadStandIn(file=file)
+
+
+# Required interface for RSCAD obj.  Not strictly necessary,
+# more for documentation
 class RSCADBase(object):
-    def connect(self):
-        # if no ip/port has been set, just allow the exception to pass thoguh
-        self._sock.connect(self.com_param)
+    def connect(self, *args, **kw):
+        raise RSCADNotImplementedException('connect()')
+    def makefile(self, *args, **kw):
+        raise RSCADNotImplementedException('makefile()')
+    def waitforsync(self, *args, **kw):
+        raise RSCADNotImplementedException('waitforsync()')
+    def close(self, *args, **kw):
+        raise RSCADNotImplementedException('close()')
 
-    def send(self, stuff):
-        self._sock.send(stuff)
-
-    def close(self):
-        self._sock.close()
-
-    def waitforsync(self, sequenceid):
-        self.send('ListenOnPortHandshake("%s");' % (sequenceid))
-        fcon = self.makefile()
-        while (True):
-            line = fcon.readline()
-            if (line.strip() == sequenceid):
-                return
-            else:
-                ## All the \n are anoying, remove them
-                yield lien.strip()
 
 class RSCAD(RSCADBase):
     def __init__(self, ipport=None):
@@ -30,6 +35,10 @@ class RSCAD(RSCADBase):
             self.com_param = ipport
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def connect(self):
+        # if no ip/port has been set, just allow the exception to pass thoguh
+        self._sock.connect(self.com_param)
 
     def makefile(self):
         return self._sock.makefile()
@@ -41,41 +50,41 @@ class RSCAD(RSCADBase):
             self._sock.close()
         except: pass
 
+    def waitforsync(self, sequenceid):
+        self._sock.send('ListenOnPortHandshake("%s");' % (sequenceid))
+        filecon = self._sock.makefile()
+        while True:
+            line = filecon.readline()
+            if (line.strip() == sequenceid):
+                return
+            else:
+                yield line.strip()
 
 
 # implement the RSCAD interface, but output to a file
 class rscadStandIn(RSCADBase):
     def __init__(self, file=None):
-        self.file = file
-        self._sock = socketStandin()
+        # _sock to remain consistant with RSCAD
+        self._file = self._sock = file
+
+    def connect(self):
+        # noop as file is passed in already open
+        pass
 
     def makefile(self):
+        # Need to intercept (and toss out) writes
         return self
-    def readline(self):
-        l = self.file.readline()
-        if (l == ''):
-            return self.seq.pop()
 
-        ## due to diffferences in how all the loops come together
-        ## pull args.sleeptime form the global scope
-        ## and sleep here
-        time.sleep(args.sleeptime)
-        return l
+    def write(self, line):
+        # another noop (replay ignores "new" input to rscad
+        pass
 
 
-# A simple noop stand in socket
-class socketStandIn(object):
-    def __init__(self):
-        self.seq = list()
-    def send(self, *args, **kw):
-        try:
-            ## try: just in case a non-string is sent
-            if (args[0].startswith('ListenOnPortHandshake')):
-                self.seq.append(args[0][23:-3])
-        except:
-            # Every other case, including errors, can be ignored
-            pass
-    def close(self): pass   # absolute noop
-    def connect(self): pass   # absolute noop
+    def close(self):
+        self._file.close()
 
-
+    def waitforsync(self, sequenceid):
+        for line in self._file.readlines():
+            # need to throttle data (just in case)
+            time.sleep(0.25)
+            yield line.strip()
