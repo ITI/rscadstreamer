@@ -9,7 +9,7 @@ Vrms7 = MeterCapture("Vrms7");
 Vrms8 = MeterCapture("Vrms8");
 Vrms9 = MeterCapture("Vrms9");
 
-float LA2, LA3, ANG4, ANG5, ANG6, ANG7, ANG8, ANG9;
+float ANG2, ANG3, ANG4, ANG5, ANG6, ANG7, ANG8, ANG9;
 ANG2 = MeterCapture("ANG2");
 ANG3 = MeterCapture("ANG3");
 ANG4 = MeterCapture("ANG4");
