@@ -1,5 +1,5 @@
 from rscadplugin import RSCADPlugin
-from rscadutils import iptuple
+from rscadutils import iptuple, json_fix
 
 class kerk(RSCADPlugin):
     def options(self, parser):
@@ -18,14 +18,16 @@ class kerk(RSCADPlugin):
             return
 
         data = self.sock.recv(1000000)
+        f = rscad.makefile()
 
-        rscad.makefile().writeline('Stop;')
+        f.write('Stop;')
         if data == "kick_the_system":
-            rscad.makefile().writeline(r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case1\wscc_9bus_demostate1.sib");')
+            f.write(r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case1\wscc_9bus_demostate1.sib");')
         else:
-            rscad.makefile().writeline(r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case1\wscc_9bus_demostate2.sib");')
-        rscad.makefile().writeline('Start;')
+            f.write(r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case2\wscc_9bus_demostate2.sib");')
+        f.write('Start;')
+        f.flush()
         rscad.waitforsync('kerk_plugin')
 
         def handle_output(self, line):
-            self.sock.send(line)
+            self.sock.send(json_fix(line))
