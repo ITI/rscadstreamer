@@ -1,0 +1,1 @@
+python ./rscadstreamer.py -p ./plugins -Pconout -f getmeter.scr -R 192.168.80.204:5555 -Pfileout --fileout-file /tmp/foutest
