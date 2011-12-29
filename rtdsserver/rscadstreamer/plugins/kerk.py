@@ -29,5 +29,5 @@ class kerk(RSCADPlugin):
         f.flush()
         rscad.waitforsync('kerk_plugin')
 
-        def handle_output(self, line):
-            self.sock.send(json_fix(line))
+    def handle_output(self, line):
+        self.sock.send(json_fix(line))
