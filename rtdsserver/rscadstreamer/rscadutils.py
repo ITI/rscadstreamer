@@ -1,12 +1,11 @@
 import sys
 import argparse
 
-## close up connections and such
-def cleanup(rscad, destinations, file):
-    rscad.close()
+import __builtin__
 
-    for d in destinations:
-        d.close()
+## close up connections and such
+def cleanup(rscad, file):
+    rscad.close()
 
     file.close()
 
@@ -40,6 +39,8 @@ def parseopts():
             help='Plugin to load. Multiple --plugin/-P options allowed')
     parser.add_argument('--script-file', '-f', type=file, default=sys.stdin,
             metavar='FILE', dest='script')
+    parser.add_argument('--debug', '-D', action='store_true', dest='debug',
+            help='Enable debugging output')
 
     # Sources (intermediate group for labeled grouping)
     igroup = parser.add_argument_group('Source',
@@ -54,4 +55,13 @@ def parseopts():
             help='Read data stream from a file generated using --to-file')
 
     # Parse the command line
-    return parser.parse_known_args()
+    args, other_args = parser.parse_known_args()
+
+    ## global for debugging
+    __builtin__.__rscaddebug__ = args.debug
+
+    return args, other_args
+
+def debug(msg):
+    if __rscaddebug__:
+        print msg

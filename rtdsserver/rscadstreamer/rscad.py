@@ -1,5 +1,7 @@
 import socket
 
+from rscadutils import debug
+
 class RSCADNotImplementedException(Exception): pass
 
 # factory method that returns the correct rscad source object
@@ -55,6 +57,7 @@ class RSCAD(RSCADBase):
         filecon = self._sock.makefile()
         while True:
             line = filecon.readline()
+            debug('incomming line: %s' % (line))
             if (line.strip() == sequenceid):
                 return
             else:

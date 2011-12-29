@@ -1,3 +1,6 @@
+import os
+import sys
+import argparse
 
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
@@ -18,6 +21,7 @@ class RSCADPlugin(object):
     def init(self, *arg, **kw): pass
     def handle_output(self, *arg, **kw): pass
     def handle_input(self, *arg, **kw): pass
+    def cleanup(self, *arg, **kw): pass
 
 
 
@@ -32,7 +36,7 @@ def loadPlugins(dirs, plugins, opts):
         # list comprehensions rock!
         [sys.path.insert(0, x) for x in envpath]
 
-    if args.path is not None:
+    if dirs is not None:
         envpath = dirs.split(':')
         envpath.reverse()
         # list comprehensions rock!
