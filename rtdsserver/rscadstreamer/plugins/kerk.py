@@ -1,6 +1,7 @@
 from rscadplugin import RSCADPlugin
 from rscadutils import iptuple, json_fix
 
+
 class kerk(RSCADPlugin):
     def options(self, parser):
         parser.add_argument('--kerk-remote', '-kr', default=None

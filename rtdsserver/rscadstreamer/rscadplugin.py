@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 
+
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):
         if not hasattr(cls, 'plugins'):
@@ -17,13 +18,20 @@ class RSCADPlugin(object):
 
     ## Every plugin should implement options() to define plugin specific
     # command line options.  If none are needed, this will cover it
-    def options(self, *arg, **kw): pass
-    def init(self, *arg, **kw): pass
-    def handle_output(self, *arg, **kw): pass
-    def handle_input(self, *arg, **kw): pass
-    def cleanup(self, *arg, **kw): pass
+    def options(self, *arg, **kw):
+        pass
 
+    def init(self, *arg, **kw):
+        pass
 
+    def handle_output(self, *arg, **kw):
+        pass
+
+    def handle_input(self, *arg, **kw):
+        pass
+
+    def cleanup(self, *arg, **kw):
+        pass
 
 
 # Loads the plugins
@@ -51,6 +59,3 @@ def loadPlugins(dirs, plugins, opts):
     plugin_parser = argparse.ArgumentParser()
     [p.options(plugin_parser) for p in RSCADPlugin.plugins]
     return plugin_parser.parse_args(opts)
-
-
-

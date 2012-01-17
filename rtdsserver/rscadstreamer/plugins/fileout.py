@@ -4,6 +4,7 @@ from argparse import FileType
 from rscadplugin import RSCADPlugin
 from rscadutils import iptuple, debug, json_fix
 
+
 class fileout(RSCADPlugin):
     def options(self, parser):
         parser.add_argument('--fileout-file', required=True,

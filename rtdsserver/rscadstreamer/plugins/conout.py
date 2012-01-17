@@ -2,6 +2,7 @@ import sys
 from rscadplugin import RSCADPlugin
 from rscadutils import iptuple, debug, json_fix
 
+
 class conout(RSCADPlugin):
 
     def init(self, args):

@@ -3,6 +3,7 @@ import argparse
 
 import __builtin__
 
+
 ## close up connections and such
 def cleanup(rscad, file):
     rscad.close()
@@ -25,6 +26,7 @@ def iptuple(ip):
         return (r[0], 5555)
     else:
         return (r[0], int(r[1]))
+
 
 def parseopts():
     parser = argparse.ArgumentParser(description='RSCAD Script interactions')
@@ -61,6 +63,7 @@ def parseopts():
     __builtin__.__rscaddebug__ = args.debug
 
     return args, other_args
+
 
 def debug(msg):
     if __rscaddebug__:

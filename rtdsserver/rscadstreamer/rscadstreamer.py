@@ -63,7 +63,7 @@ if __name__ == '__main__':
                 line = args.script.readline()
                 if line == '':
                     # rewind the file for the next pass
-                    args.script.seek(0,0)
+                    args.script.seek(0, 0)
                     break
                 rscad_file.write(line)
                 rscad_file.flush()

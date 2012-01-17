@@ -2,7 +2,10 @@ import socket
 
 from rscadutils import debug
 
-class RSCADNotImplementedException(Exception): pass
+
+class RSCADNotImplementedException(Exception):
+    pass
+
 
 # factory method that returns the correct rscad source object
 def rscadfactory(ip, file):
@@ -21,10 +24,13 @@ def rscadfactory(ip, file):
 class RSCADBase(object):
     def connect(self, *args, **kw):
         raise RSCADNotImplementedException('connect()')
+
     def makefile(self, *args, **kw):
         raise RSCADNotImplementedException('makefile()')
+
     def waitforsync(self, *args, **kw):
         raise RSCADNotImplementedException('waitforsync()')
+
     def close(self, *args, **kw):
         raise RSCADNotImplementedException('close()')
 
@@ -50,7 +56,8 @@ class RSCAD(RSCADBase):
         self._sock.send('ClosePort(%s);' % (self.com_param[1]))
         try:
             self._sock.close()
-        except: pass
+        except:
+            pass
 
     def waitforsync(self, sequenceid):
         self._sock.send('ListenOnPortHandshake("%s");' % (sequenceid))
@@ -81,7 +88,6 @@ class rscadStandIn(RSCADBase):
     def write(self, line):
         # another noop (replay ignores "new" input to rscad
         pass
-
 
     def close(self):
         self._file.close()
