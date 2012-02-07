@@ -1,8 +1,7 @@
-import sys
 from argparse import FileType
 
-from rscadplugin import RSCADPlugin
-from rscadutils import iptuple, debug, json_fix
+from rtds.rscadplugin import RSCADPlugin
+from rtds.rscadutils import json_fix
 
 
 class fileout(RSCADPlugin):

@@ -1,6 +1,7 @@
 import socket
+import time
 
-from rscadutils import debug
+from rtds.rscadutils import debug
 
 
 class RSCADNotImplementedException(Exception):

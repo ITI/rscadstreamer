@@ -7,14 +7,14 @@ import select
 import time
 
 # utility methods
-import rscadutils as util
-from rscadutils import debug
+import rtds.rscadutils as util
+from rtds.rscadutils import debug
 
 # rscad interaction subsys
-import rscad
+import rtds.rscad as rscad
 
 # plugin subsys
-from rscadplugin import PluginMount, RSCADPlugin, loadPlugins
+from rtds.rscadplugin import PluginMount, RSCADPlugin, loadPlugins
 
 # App starts here
 if __name__ == '__main__':

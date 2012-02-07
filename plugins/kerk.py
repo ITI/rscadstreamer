@@ -1,10 +1,12 @@
-from rscadplugin import RSCADPlugin
-from rscadutils import iptuple, json_fix
+from rtds.rscadplugin import RSCADPlugin
+from rtds.rscadutils import iptuple, json_fix
+
+import socket
 
 
 class kerk(RSCADPlugin):
     def options(self, parser):
-        parser.add_argument('--kerk-remote', '-kr', default=None
+        parser.add_argument('--kerk-remote', '-kr', default=None,
                 dest='kerk_remote', metavar='ip:port', type=iptuple)
 
     def init(self, args):

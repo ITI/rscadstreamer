@@ -1,6 +1,6 @@
 import sys
-from rscadplugin import RSCADPlugin
-from rscadutils import iptuple, debug, json_fix
+from rtds.rscadplugin import RSCADPlugin
+from rtds.rscadutils import debug, json_fix
 
 
 class conout(RSCADPlugin):
