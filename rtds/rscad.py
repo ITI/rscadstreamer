@@ -22,6 +22,7 @@ def rscadfactory(ip, file):
 
 # Required interface for RSCAD obj.  Not strictly necessary,
 # more for documentation
+# TODO: use ABC (requires python >2.6)
 class RSCADBase(object):
     def connect(self, *args, **kw):
         raise RSCADNotImplementedException('connect()')
