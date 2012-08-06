@@ -91,8 +91,12 @@ class rscadStandIn(RSCADBase):
         # another noop (replay ignores "new" input to rscad
         pass
 
+    def flush(self):
+        pass
+
     def close(self):
-        self._file.close()
+        if self._file is not None:
+            self._file.close()
 
     def waitforsync(self, sequenceid):
         for line in self._file.readlines():
