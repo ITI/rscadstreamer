@@ -33,6 +33,9 @@ class RSCADPlugin(object):
     def cleanup(self, *arg, **kw):
         pass
 
+    def register_commands(self):
+        return dict()
+
 
 # Loads the plugins
 def loadPlugins(dirs, plugins, opts):

@@ -1,6 +1,11 @@
+
+from __future__ import with_statement
+
 import os
 import select
 import time
+
+## ugh!  Old python
 
 
 # utility methods
@@ -12,6 +17,7 @@ import rtds.rscad as rscad
 
 # plugin subsys
 from rtds.rscadplugin import PluginMount, RSCADPlugin, loadPlugins
+
 
 def streamer():
     # Start by loading up available options
@@ -30,8 +36,6 @@ def streamer():
 
     os.mkfifo(cmd_fifo)
     cmd_chan = open(cmd_fifo, 'r+')
-
-
 
     # Load up plugins and parse plugin specific command line opts
     debug('loading plugins')
@@ -55,10 +59,18 @@ def streamer():
             # Don't have poll() either? Quit using windows!
             print('Must be run a platform that supports poll() or epoll()')
 
+    # Add the command channel to the poller
+    poller.register(cmd_chan.fileno(), select.POLLIN)
+
     # Init plugins - set up (e)poll for cases that care
     [poller.register(fileno, select.POLLIN) for fileno in [
         p.init(plugin_args) for p in RSCADPlugin.plugins] if
         fileno is not None]
+
+    ## get any plugin commands
+    debug('Registering plugin specific commands')
+    pcommands = dict()
+    [pcommands.update(p.register_commands()) for p in RSCADPlugin.plugins]
 
     # Need to write rscad script to RSCAD before starting the event loop
     ## Hook up piping
@@ -88,10 +100,14 @@ def streamer():
 
             # check for incomming data
             fd = poller.poll(0)
-            # loop through plugins calling handle_data
-            # it's up to the plugin to make sure the data belongs to it
-            [[p.handle_input(filedes[0], RSCAD) for p in
-                RSCADPlugin.plugins] for filedes in fd]
+
+            if fd == cmd_chan.fileno():
+                handle_command(pcommands)
+            else:
+                # loop through plugins calling handle_data
+                # it's up to the plugin to make sure the data belongs to it
+                [[p.handle_input(filedes[0], RSCAD) for p in
+                    RSCADPlugin.plugins] for filedes in fd]
 
             time.sleep(args.sleeptime)
 
@@ -101,3 +117,7 @@ def streamer():
         os.unlink(cmd_chan.name)
         [p.cleanup() for p in RSCADPlugin.plugins]
         util.cleanup(RSCAD, args.script)
+
+
+def handle_command(plugin_commands):
+    pass
