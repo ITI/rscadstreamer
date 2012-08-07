@@ -102,8 +102,8 @@ def streamer():
             fd = poller.poll(0)
 
             if fd == cmd_chan.fileno():
-                handle_command(pcommands)
-            else:
+                handle_command(fd, pcommands)
+            else
                 # loop through plugins calling handle_data
                 # it's up to the plugin to make sure the data belongs to it
                 [[p.handle_input(filedes[0], RSCAD) for p in
@@ -119,5 +119,8 @@ def streamer():
         util.cleanup(RSCAD, args.script)
 
 
-def handle_command(plugin_commands):
-    pass
+def handle_command(fd, plugin_commands):
+    f = fdopen(fd)
+    l = f.readlines()
+
+    debug(l)
