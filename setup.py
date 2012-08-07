@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import os
+import sys
+
 from distutils.core import setup
 
 setup(
@@ -14,3 +17,11 @@ setup(
         packages=['rtds'],
         scripts=['rscadstreamer'],
     )
+
+try:
+    os.symlink(
+        os.sep.join([sys.prefix, 'bin', 'rscadstreamer']),
+        os.sep.join([sys.prefix, 'bin', 'rscad-control'])
+        )
+except:
+    pass
