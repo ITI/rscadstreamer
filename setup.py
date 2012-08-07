@@ -10,8 +10,6 @@ class my_install(install_scripts):
     def run(self):
         install_scripts.run(self)
 
-        print '!!!!!!!!! {0}'.format(self.install_dir)
-
         try:
             os.symlink(
                 os.sep.join([self.install_dir, 'rscadstreamer']),
