@@ -7,7 +7,7 @@ import os
 # App starts here
 if __name__ == '__main__':
     if os.path.basename(sys.argv[0]) == 'rscad-control':
-        from rtds.comander import commander
+        from rtds.commander import commander
         commander()
     else:
         from rtds.streamer import streamer
