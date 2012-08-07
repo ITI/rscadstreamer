@@ -3,6 +3,7 @@
 from __future__ import with_statement
 
 import os
+import sys
 import select
 import time
 from io import FileIO
@@ -130,4 +131,29 @@ def handle_command(cmd_chan, plugin_commands):
     debug('handle_command()')
     l = cmd_chan.read(1000)
 
-    debug(l)
+    for cmd in l.split('\n'):
+        debug('commands: -->{0}<--'.format(cmd))
+        if cmd == 'shutdown':
+            sys.exit(0)
+
+
+        ## plugin commands _should_ be in the form of plugin_name:command, but
+        #   we'll try to handle the case where a bare command is sent.
+        #   We'll assume that any bare command not handled above is meant
+        #   for the first plugin that that has a comman component that
+        #   matches.
+
+        if cmd in plugin_commands.keys():
+            plugin_commands[cmd](cmd)
+
+        else:
+            # Ugh!  More LCD crap.  Everything should be 2.7 minimum
+            cmds = dict((k.split(':')[1], v) for \
+                    (k,v) in plugin_commands.items())
+
+            if cmd in cmds.keys():
+                cmds[cmd](cmd)
+            else:
+                debug('Unhandled command: {0}'.format(cmd))
+
+
