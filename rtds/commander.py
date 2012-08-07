@@ -43,6 +43,7 @@ def commander():
 
     with open('/tmp/rscad_streamer_{0}'.format(pid), 'a') as cmd_chan:
         debug('sending command {0}'.format(other_args))
-        cmd_chan.write(' '.join(other_args))
+        for cmd in other_args:
+            cmd_chan.write('{0}\n'.format(cmd))
         cmd_chan.flush()
 
