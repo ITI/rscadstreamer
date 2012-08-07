@@ -117,6 +117,7 @@ def streamer():
         os.unlink(cmd_chan.name)
         [p.cleanup() for p in RSCADPlugin.plugins]
         util.cleanup(RSCAD, args.script)
+        os.unlink(args.pidfile)
 
 
 def handle_command(fd, plugin_commands):
