@@ -4,6 +4,22 @@ import os
 import sys
 
 from distutils.core import setup
+from distutils.command.install_scripts import install_scripts
+
+class my_install(install_scripts):
+    def run(self):
+        install_scripts.run(self)
+
+        print '!!!!!!!!! {0}'.format(self.install_dir)
+
+        try:
+            os.symlink(
+                os.sep.join([self.install_dir, 'rscadstreamer']),
+                os.sep.join([self.install_dir, 'rscad-control'])
+                )
+        except:
+            pass
+
 
 setup(
         name='rscadstreamer',
@@ -16,12 +32,6 @@ setup(
         ],
         packages=['rtds'],
         scripts=['rscadstreamer'],
+        cmdclass=dict(install_scripts=my_install)
     )
 
-try:
-    os.symlink(
-        os.sep.join([sys.prefix, 'bin', 'rscadstreamer']),
-        os.sep.join([sys.prefix, 'bin', 'rscad-control'])
-        )
-except:
-    pass
