@@ -10,6 +10,6 @@ if __name__ == '__main__':
         from rtds.commander import commander
         commander()
     else:
-        from rtds.streamer import streamer
+        from rtds.streamer2 import streamer
         streamer()
 
