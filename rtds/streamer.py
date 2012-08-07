@@ -1,11 +1,11 @@
 
+## ugh!  Old python
 from __future__ import with_statement
 
 import os
 import select
 import time
-
-## ugh!  Old python
+from io import FileIO
 
 
 # utility methods
@@ -35,7 +35,8 @@ def streamer():
         os.unlink(cmd_fifo)
 
     os.mkfifo(cmd_fifo)
-    cmd_chan = open(cmd_fifo, 'r+')
+    cmd_chan = FileIO(cmd_fifo, 'r+')
+
 
     # Load up plugins and parse plugin specific command line opts
     debug('loading plugins')
@@ -87,7 +88,11 @@ def streamer():
                 line = args.script.readline()
                 if line == '':
                     # rewind the file for the next pass
-                    args.script.seek(0, 0)
+                    try:
+                        args.script.seek(0, 0)
+                    except IOError:
+                        # probably stdin
+                        pass
                     break
                 rscad_file.write(line)
                 rscad_file.flush()
@@ -100,9 +105,10 @@ def streamer():
 
             # check for incomming data
             fd = poller.poll(0)
+            debug('Got filedes {0}'.format(fd))
 
-            if fd == cmd_chan.fileno():
-                handle_command(fd, pcommands)
+            if cmd_chan.fileno() in [fdes[0] for fdes in fd]:
+                handle_command(cmd_chan, pcommands)
             else:
                 # loop through plugins calling handle_data
                 # it's up to the plugin to make sure the data belongs to it
@@ -120,8 +126,8 @@ def streamer():
         os.unlink(args.pidfile)
 
 
-def handle_command(fd, plugin_commands):
-    f = os.fdopen(fd)
-    l = f.readlines()
+def handle_command(cmd_chan, plugin_commands):
+    debug('handle_command()')
+    l = cmd_chan.read(1000)
 
     debug(l)
