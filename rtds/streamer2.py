@@ -27,60 +27,84 @@ def streamer():
     # Start by loading up available options
     args, other_args = util.parseopts()
 
-    debug('Setting up command channel')
-    pid = os.getpid()
-    with open(args.pidfile, 'w') as pidfile:
-        pidfile.write('{0}'.format(pid))
+    try:
+        debug('Setting up command channel')
+        pid = os.getpid()
+        with open(args.pidfile, 'w') as pidfile:
+            pidfile.write('{0}'.format(pid))
 
-    cmd_fifo = '/tmp/rscad_streamer_{0}'.format(pid)
+        cmd_fifo = '/tmp/rscad_streamer_{0}'.format(pid)
 
-    if os.path.exists(cmd_fifo):
-        # This shouldn't happen try to rm it
-        os.unlink(cmd_fifo)
+        if os.path.exists(cmd_fifo):
+            # This shouldn't happen try to rm it
+            os.unlink(cmd_fifo)
 
-    os.mkfifo(cmd_fifo)
-    cmd_chan = FileIO(cmd_fifo, 'r+')
-
-
-    # Load up plugins and parse plugin specific command line opts
-    debug('loading plugins')
-    plugin_args = loadPlugins(args.path, args.plugins, other_args)
-
-    # get an appropriate rscad object
-    #debug('making rscad obj')
-    #RSCAD = rscad.rscadfactory(args.rscad, args.ffile)
-    #debug('RSCAD: %s' % (type(RSCAD)))
-
-    main_loop = pyev.default_loop()
+        os.mkfifo(cmd_fifo)
+        cmd_chan = FileIO(cmd_fifo, 'r+')
 
 
+        # Load up plugins and parse plugin specific command line opts
+        debug('loading plugins')
+        plugin_args = loadPlugins(args.path, args.plugins, other_args)
 
-    # Init plugins - return:
-    #   {fileno: n, read_cb: fn, write_cb: fn, commands: {cmd, fn}}
-    plugin_commands = {}
-    # Add the command channel to the poller
+        # get an appropriate rscad object
+        debug('making rscad obj')
 
-    w = pyev.Io(cmd_chan.fileno(), pyev.EV_READ, main_loop, handle_command,
-            data=[plugin_commands, cmd_chan])
-    w.start()
+        #RSCAD = rscad.rscadfactory(args.rscad, args.ffile)
+        #debug('RSCAD: %s' % (type(RSCAD)))
 
-    main_loop.start()
+        main_loop = pyev.default_loop()
+
+        # need these, even if empty
+        plugin_commands = dict()
+        cleanup_hooks = list()
+
+        # Add the command channel to the poller
+        w = pyev.Io(cmd_chan.fileno(), pyev.EV_READ, main_loop, handle_command,
+                data=[cmd_chan, plugin_commands])
+        w.start()
+
+        for p in RSCADPlugin.plugins:
+            r = p.init(plugin_args)
+
+            # IO bits
+            if r.has_key('input'):
+                w = pyev.Io(r['input'][0], pyev.EV_READ, main_loop,
+                        r['input'][1])
+                w.start()
+            if r.has_key('output'):
+                w = pyev.Io(r['output'][0], pyev.EV_WRITE, main_loop,
+                        r['output'][1])
+                w.start()
+
+            if r.has_key('commands'):
+                plugin_commands.update(r['commands'])
+
+            if r.has_key('cleanup'):
+                cleanup_hooks.append(r['cleanup'])
 
 
+        main_loop.start()
 
-
-
-
+    finally:
+        debug('Cleaning up')
+        cmd_chan.close()
+        os.unlink(cmd_chan.name)
+        [cleanup() for cleanup in cleanup_hooks]
+        #util.cleanup(RSCAD, args.script)
+        os.unlink(args.pidfile)
 
 
 def handle_command(watcher, event):
-    cmd_chan = watcher.data[1]
-    plugin_commands = watcher.data[0]
+    cmd_chan = watcher.data[0]
+    plugin_commands = watcher.data[1]
 
     debug('handle_command()')
     l = cmd_chan.read(1000)
 
     for cmd in l.split('\n'):
+        if cmd == '':
+            continue
         debug('commands: -->{0}<--'.format(cmd))
         if cmd == 'shutdown':
             watcher.loop.stop()
@@ -94,7 +118,6 @@ def handle_command(watcher, event):
 
         if cmd in plugin_commands.keys():
             plugin_commands[cmd](cmd)
-
         else:
             # Ugh!  More LCD crap.  Everything should be 2.7 minimum
             cmds = dict((k.split(':')[1], v) for \

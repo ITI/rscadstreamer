@@ -21,21 +21,20 @@ class RSCADPlugin(object):
     def options(self, *arg, **kw):
         pass
 
-    def init(self, *arg, **kw):
+    # Should return a dict of hook points and data specific to that hook point
+    # see docs for specifics on what hook points are supported, and expected
+    # data
+    # ex:
+    # r = {
+    #   'output': (fileno, self.handle_output),
+    #   'inout': (fileno, self.handle_input),
+    #   'cleanup': self.cleanup,
+    #   'commands': {
+    #       'myplugin:foo': self.handle_foo_command
+    #   },
+    # }
+    def init(self, args):
         pass
-
-    def handle_output(self, *arg, **kw):
-        pass
-
-    def handle_input(self, *arg, **kw):
-        pass
-
-    def cleanup(self, *arg, **kw):
-        pass
-
-    def register_commands(self):
-        return dict()
-
 
 # Loads the plugins
 def loadPlugins(dirs, plugins, opts):
