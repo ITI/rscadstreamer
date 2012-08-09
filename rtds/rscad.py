@@ -1,5 +1,6 @@
 import socket
-import time
+import pyev
+import io
 
 from rtds.rscadutils import debug
 
@@ -9,97 +10,104 @@ class RSCADNotImplementedException(Exception):
 
 
 # factory method that returns the correct rscad source object
-def rscadfactory(ip, file):
-    # Arg parse will only allow ip or file.
-    # cannot be both, nor neither
-    if ip is not None:
-        # Must be real rscad
-        return RSCAD(ipport=ip)
+def rscadfactory(con_obj, hooks):
+    if isinstance(con_obj, tuple):
+        return RSCADrtds(con_obj, hooks)
+    elif isinstance(con_obj, str):
+        return RSCADfile(con_obj, hooks)
     else:
-        # Must be replay data
-        return rscadStandIn(file=file)
+        return RSCADnull()
+
+
+## The point of the RSCAD object is to connect to an instance of the
+## rscad scriping interface ad marshall script segments and output back and
+## forth.
+
 
 
 # Required interface for RSCAD obj.  Not strictly necessary,
 # more for documentation
-# TODO: use ABC (requires python >2.6)
 class RSCADBase(object):
-    def connect(self, *args, **kw):
-        raise RSCADNotImplementedException('connect()')
+    def __init__(self, hooks):
+        self.sequenceid = None
+        self._need_synch = False
+        self.indata = None
+        self.outdata = None
 
-    def makefile(self, *args, **kw):
-        raise RSCADNotImplementedException('makefile()')
+        loop = pyev.default_loop()
+        self.watcher = pyev.Io(self._file.fileno(), pyev.EV_READ, loop, self.io)
+        self.watcher.start()
 
-    def waitforsync(self, *args, **kw):
-        raise RSCADNotImplementedException('waitforsync()')
-
-    def close(self, *args, **kw):
-        raise RSCADNotImplementedException('close()')
-
-
-class RSCAD(RSCADBase):
-    def __init__(self, ipport=None):
-        if (ipport is None):
-            self.com_param = None
+    def io(self, watcher, events):
+        if events & pyev.EV_READ:
+            self._handle_read(watcher, events)
         else:
-            self.com_param = ipport
+            self._handle_write(watcher, events)
 
+    def send(self, data):
+        self.outdata = '{0}{1}'.format(self.outdata, data)
+        self.reset(pyev.EV_READ|pyev.EV_WRITE)
+
+    def _handle_read(self, watcher, events):
+        if hasattr(self, 'handle_read'):
+            self.handle_read(watcher, events)
+        else:
+            self.indata = self._file.read()
+
+        self._run_hooks('output', self.indata)
+
+        self.indata = None
+
+    def _handle_write(self, watcher, events):
+        self._run_hooks('output', self.outdata)
+
+        if hasattr(self, 'handle_write'):
+            self.handle_write(watcher, events)
+        else:
+            self._file.write(self.outdata)
+
+        self.outdata = None
+        self.reset(pyev.EV_READ)
+
+    def _run_hooks(self, htype, data):
+        for hook in self.hooks[htype]:
+            hook(data)
+
+    def reset(self, events):
+        self.watcher.stop()
+        self.watcher.set(self._file.fileno(), events)
+        self.watcher.start()
+
+    def waitforsync(self, sequenceid):
+        self.sequenceid = sequenceid
+        self.send('ListenOnPortHandshake("{0}");'.format(sequenceid))
+
+class RSCADnull(RSCADBase):
+    def __init__(self):
+        pass
+
+    def send(self, flags):
+        pass
+
+    def waitforsync(self, sequenceid):
+        pass
+
+
+class RSCADrtds(RSCADBase):
+    def __init__(self, ipport, hooks):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.setblocking(0)
+        self._sock.connect(ipport)
 
-    def connect(self):
-        # if no ip/port has been set, just allow the exception to pass thoguh
-        self._sock.connect(self.com_param)
+        self._file = self._sock.makefile()
 
-    def makefile(self):
-        return self._sock.makefile()
-
-    def close(self):
-        self._sock.send('fprintf(stdmsg, "The END");')
-        self._sock.send('ClosePort(%s);' % (self.com_param[1]))
-        try:
-            self._sock.close()
-        except:
-            pass
-
-    def waitforsync(self, sequenceid):
-        self._sock.send('ListenOnPortHandshake("%s");' % (sequenceid))
-        filecon = self._sock.makefile()
-        while True:
-            line = filecon.readline()
-            debug('incomming line: %s' % (line))
-            if (line.strip() == sequenceid):
-                return
-            else:
-                yield line.strip()
+        super(RSCADrtds, self).__init__(hooks)
 
 
-# implement the RSCAD interface, but output to a file
-class rscadStandIn(RSCADBase):
-    def __init__(self, file=None):
-        # _sock to remain consistant with RSCAD
-        self._file = self._sock = file
+class RSCADfile(RSCADBase):
+    def __init__(self, infile, hooks):
+        self._file = io.FileIO(infile, "r")
+        super(RSCADrtds, self).__init__(hooks)
 
-    def connect(self):
-        # noop as file is passed in already open
-        pass
 
-    def makefile(self):
-        # Need to intercept (and toss out) writes
-        return self
 
-    def write(self, line):
-        # another noop (replay ignores "new" input to rscad
-        pass
-
-    def flush(self):
-        pass
-
-    def close(self):
-        if self._file is not None:
-            self._file.close()
-
-    def waitforsync(self, sequenceid):
-        for line in self._file.readlines():
-            # need to throttle data (just in case)
-            time.sleep(0.25)
-            yield line.strip()

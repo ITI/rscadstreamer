@@ -42,47 +42,42 @@ def streamer():
         os.mkfifo(cmd_fifo)
         cmd_chan = FileIO(cmd_fifo, 'r+')
 
-
         # Load up plugins and parse plugin specific command line opts
         debug('loading plugins')
         plugin_args = loadPlugins(args.path, args.plugins, other_args)
 
-        # get an appropriate rscad object
-        debug('making rscad obj')
-
-        #RSCAD = rscad.rscadfactory(args.rscad, args.ffile)
-        #debug('RSCAD: %s' % (type(RSCAD)))
-
         main_loop = pyev.default_loop()
 
         # need these, even if empty
-        plugin_commands = dict()
-        cleanup_hooks = list()
+        hooks = {
+            'plugin_commands': dict(),
+            'cleanup_hooks' : list(),
+            'input_hooks' : list(),
+            'output_hooks' : list(),
+        }
 
         # Add the command channel to the poller
         w = pyev.Io(cmd_chan.fileno(), pyev.EV_READ, main_loop, handle_command,
-                data=[cmd_chan, plugin_commands])
+                data=[cmd_chan, hooks['plugin_commands']])
         w.start()
 
         for p in RSCADPlugin.plugins:
             r = p.init(plugin_args)
 
-            # IO bits
+            # Extract hooks
             if r.has_key('input'):
-                w = pyev.Io(r['input'][0], pyev.EV_READ, main_loop,
-                        r['input'][1])
-                w.start()
+                hooks['input_hooks'].append(r['input'])
             if r.has_key('output'):
-                w = pyev.Io(r['output'][0], pyev.EV_WRITE, main_loop,
-                        r['output'][1])
-                w.start()
-
+                hooks['output_hooks'].append(r['output'])
             if r.has_key('commands'):
-                plugin_commands.update(r['commands'])
-
+                hooks['plugin_commands'].update(r['commands'])
             if r.has_key('cleanup'):
-                cleanup_hooks.append(r['cleanup'])
+                hooks['cleanup_hooks'].append(r['cleanup'])
 
+        ## Setup rscad obj
+        debug('making rscad obj')
+        RSCAD = rscad.rscadfactory(None, hooks)
+        debug('RSCAD type: {0}'.format(type(RSCAD)))
 
         main_loop.start()
 
@@ -90,7 +85,7 @@ def streamer():
         debug('Cleaning up')
         cmd_chan.close()
         os.unlink(cmd_chan.name)
-        [cleanup() for cleanup in cleanup_hooks]
+        [cleanup() for cleanup in hooks['cleanup_hooks']]
         #util.cleanup(RSCAD, args.script)
         os.unlink(args.pidfile)
 

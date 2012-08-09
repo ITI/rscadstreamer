@@ -26,8 +26,8 @@ class RSCADPlugin(object):
     # data
     # ex:
     # r = {
-    #   'output': (fileno, self.handle_output),
-    #   'inout': (fileno, self.handle_input),
+    #   'output': self.handle_output,
+    #   'input': self.handle_input,
     #   'cleanup': self.cleanup,
     #   'commands': {
     #       'myplugin:foo': self.handle_foo_command
