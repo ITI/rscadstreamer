@@ -108,6 +108,7 @@ def handle_command(watcher, event):
         debug('commands: -->{0}<--'.format(cmd))
         if cmd == 'shutdown':
             watcher.loop.stop()
+            return
 
 
         ## plugin commands _should_ be in the form of plugin_name:command, but
