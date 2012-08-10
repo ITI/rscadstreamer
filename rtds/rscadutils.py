@@ -34,32 +34,19 @@ def parseopts():
     parser = argparse.ArgumentParser(description='RSCAD Script interactions')
 
     # General options
-    parser.add_argument('--delay', '-d', default=0.5, type=float,
-            dest='sleeptime', help='how long to sleep between cycles')
     parser.add_argument('--plugin-dir', '-p', metavar='PATH', dest='path',
             help='Location of plugins if not in PYTHON_PATH')
     parser.add_argument('--plugin', '-P', action='append',
             metavar='PLUGIN', dest='plugins',
             help='Plugin to load. Multiple --plugin/-P options allowed')
-    parser.add_argument('--script-file', '-f', type=file, default=sys.stdin,
-            metavar='FILE', dest='script')
     parser.add_argument('--debug', '-D', action='store_true', dest='debug',
             help='Enable debugging output')
     parser.add_argument('--pid-file', '-r', type=str, dest='pidfile',
             default='/var/run/rscadstreamer.pid', metavar='PIDFILE',
             help='Path to file sotring PID')
-
-    # Sources (intermediate group for labeled grouping)
-    igroup = parser.add_argument_group('Source',
-            'Exacly one source must be selected')
-    # real group for mutual exclusion
-    sgroup = igroup.add_mutually_exclusive_group(required=True)
-    sgroup.add_argument('--rscad', '-R', metavar='rscad_ip:port',
+    parser.add_argument('--rscad', '-R', metavar='rscad_ip:port',
             type=iptuple, default=None,
             help='IP and Port of RSCAD', dest='rscad')
-    sgroup.add_argument('--from-file', '-F', type=file, default=None,
-            metavar='FILE', dest='ffile',
-            help='Read data stream from a file generated using --to-file')
 
     # Parse the command line
     args, other_args = parser.parse_known_args()
