@@ -57,7 +57,8 @@ class RSCADBase(object):
         else:
             self.indata = self._file.read()
 
-        self._run_hooks('output', self.indata)
+        self.indata = self._run_filters(self.indata)
+        self._run_hooks('input', self.indata)
 
         self.indata = None
 
@@ -72,11 +73,17 @@ class RSCADBase(object):
         self.outdata = None
         self.reset(pyev.EV_READ)
 
-    def _run_hooks(self, htype, data):
-        for hook in self.hooks[htype]:
+    ## Nedd special filter so data can be changed
+    def _run_filters(self, data):
+        for hook in self.hooks['filters']:
             data = hook(data)
             if data is None:
                 break
+        return data
+
+    def _run_hooks(self, htype, data):
+        for hook in self.hooks[htype]:
+            hook(data)
 
     def reset(self, events):
         self.watcher.stop()

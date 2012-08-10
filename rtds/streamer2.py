@@ -49,9 +49,10 @@ def streamer():
         # need these, even if empty
         hooks = {
             'plugin_commands': dict(),
-            'cleanup_hooks' : list(),
-            'input_hooks' : list(),
-            'output_hooks' : list(),
+            'cleanup' : list(),
+            'input' : list(),
+            'output' : list(),
+            'filters' : list(),
         }
 
         # Add the command channel to the poller
@@ -64,13 +65,15 @@ def streamer():
 
             # Extract hooks
             if r.has_key('input'):
-                hooks['input_hooks'].append(r['input'])
+                hooks['input'].append(r['input'])
             if r.has_key('output'):
-                hooks['output_hooks'].append(r['output'])
+                hooks['output'].append(r['output'])
             if r.has_key('commands'):
                 hooks['plugin_commands'].update(r['commands'])
             if r.has_key('cleanup'):
-                hooks['cleanup_hooks'].append(r['cleanup'])
+                hooks['cleanup'].append(r['cleanup'])
+            if r.has_key('filter'):
+                hooks['filters'].append(r['filter'])
 
         ## Setup rscad obj
         debug('making rscad obj')
