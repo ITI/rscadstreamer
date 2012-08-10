@@ -1,9 +1,8 @@
 from argparse import FileType
 
 from rtds.rscadplugin import RSCADPlugin
-from rtds.rscadutils import json_fix
 
-
+## A basic log to file plugin
 class fileout(RSCADPlugin):
     def options(self, parser):
         parser.add_argument('--fileout-file', required=True,
@@ -11,6 +10,14 @@ class fileout(RSCADPlugin):
 
     def init(self, args):
         self.outfile = args.fileout_file
+        return {
+            'input' : self.on_input,
+            'cleanup' : self.cleanup,
+        }
 
-    def handle_output(self, line):
-        self.outfile.write(json_fix(line))
+    def on_input(self, line):
+        self.outfile.write(line)
+        return line
+
+    def cleanup(self):
+        self.outfile.close()
