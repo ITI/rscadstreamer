@@ -17,7 +17,8 @@ from rtds.rscadutils import debug
 import rtds.rscad as rscad
 
 # plugin subsys
-from rtds.rscadplugin import PluginMount, RSCADPlugin, loadPlugins
+#from rtds.rscadplugin import PluginMount, RSCADPlugin, loadPlugins
+from rtds.rscadplugin import RSCADPlugin, loadPlugins
 
 
 def streamer():
