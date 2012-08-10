@@ -12,10 +12,13 @@ class RSCADNotImplementedException(Exception):
 # factory method that returns the correct rscad source object
 def rscadfactory(con_obj, hooks):
     if isinstance(con_obj, tuple):
+        debug('Using  RSCADrtds')
         return RSCADrtds(con_obj, hooks)
     elif isinstance(con_obj, str):
+        debug('Using  RSCADfile')
         return RSCADfile(con_obj, hooks)
     else:
+        debug('Using  RSCADnull')
         return RSCADnull()
 
 

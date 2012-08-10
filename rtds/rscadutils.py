@@ -1,5 +1,5 @@
-import sys
 import argparse
+import os
 
 import __builtin__
 
@@ -23,11 +23,16 @@ def json_fix(d):
 def iptuple(ip):
     if (ip is None):
         return None
-    r = ip.split(':')
-    if (len(r) < 2):
-        return (r[0], 5555)
+
+    # see if path sep is there.  If so it's a path to a file, not an IP
+    if ip.find(os.sep) >= 0:
+        return ip
     else:
-        return (r[0], int(r[1]))
+        r = ip.split(':')
+        if (len(r) < 2):
+            return (r[0], 5555)
+        else:
+            return (r[0], int(r[1]))
 
 
 def parseopts():
@@ -44,7 +49,7 @@ def parseopts():
     parser.add_argument('--pid-file', '-r', type=str, dest='pidfile',
             default='/var/run/rscadstreamer.pid', metavar='PIDFILE',
             help='Path to file sotring PID')
-    parser.add_argument('--rscad', '-R', metavar='rscad_ip:port',
+    parser.add_argument('--rscad', '-R', metavar='rscad_ip:port|path',
             type=iptuple, default=None,
             help='IP and Port of RSCAD', dest='rscad')
 

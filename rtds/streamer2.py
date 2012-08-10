@@ -74,7 +74,7 @@ def streamer():
 
         ## Setup rscad obj
         debug('making rscad obj')
-        RSCAD = rscad.rscadfactory(None, hooks)
+        RSCAD = rscad.rscadfactory(args.ip, hooks)
         debug('RSCAD type: {0}'.format(type(RSCAD)))
 
         main_loop.start()
