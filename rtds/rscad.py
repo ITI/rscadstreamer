@@ -71,7 +71,9 @@ class RSCADBase(object):
 
     def _run_hooks(self, htype, data):
         for hook in self.hooks[htype]:
-            hook(data)
+            data = hook(data)
+            if data is None:
+                break
 
     def reset(self, events):
         self.watcher.stop()
