@@ -37,6 +37,8 @@ class RSCADBase(object):
         self.indata = None
         self.outdata = None
 
+        self.hooks = hooks
+
         loop = pyev.default_loop()
         self.watcher = pyev.Io(self._file.fileno(), pyev.EV_READ, loop, self.io)
         self.watcher.start()
@@ -108,8 +110,9 @@ class RSCADnull(RSCADBase):
 class RSCADrtds(RSCADBase):
     def __init__(self, ipport, hooks):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._sock.setblocking(0)
+        ## connect, then put into non-blocking
         self._sock.connect(ipport)
+        self._sock.setblocking(0)
 
         self._file = self._sock.makefile()
 
