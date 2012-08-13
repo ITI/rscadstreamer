@@ -4,6 +4,7 @@
 from __future__ import with_statement
 
 import os
+import sys
 from io import FileIO
 
 import pyev
@@ -28,8 +29,15 @@ def streamer():
     try:
         debug('Setting up command channel')
         pid = os.getpid()
-        with open(args.pidfile, 'w') as pidfile:
-            pidfile.write('{0}'.format(pid))
+        try:
+            with open(args.pidfile, 'w') as pidfile:
+                pidfile.write('{0}'.format(pid))
+        except IOError, e:
+            if e.errno == 13:
+                print "Permission denied openeing pidfile: {0}".format(
+                        args.pidfile)
+                sys.exit(e.errno)
+
 
         cmd_fifo = '/tmp/rscad_streamer_{0}'.format(pid)
 
@@ -77,18 +85,21 @@ def streamer():
 
         ## Setup rscad obj
         debug('making rscad obj')
-        RSCAD = rscad.rscadfactory(args.ip, hooks)
+        RSCAD = rscad.rscadfactory(args.rscad, hooks)
         debug('RSCAD type: {0}'.format(type(RSCAD)))
 
         main_loop.start()
 
     finally:
-        debug('Cleaning up')
-        cmd_chan.close()
-        os.unlink(cmd_chan.name)
-        [cleanup() for cleanup in hooks['cleanup_hooks']]
-        #util.cleanup(RSCAD, args.script)
-        os.unlink(args.pidfile)
+        try:
+            debug('Cleaning up')
+            cmd_chan.close()
+            os.unlink(cmd_chan.name)
+            [cleanup() for cleanup in hooks['cleanup_hooks']]
+            #util.cleanup(RSCAD, args.script)
+            os.unlink(args.pidfile)
+        except:
+            pass
 
 
 def handle_command(watcher, event):
