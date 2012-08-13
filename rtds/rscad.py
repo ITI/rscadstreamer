@@ -1,6 +1,7 @@
 import socket
 import pyev
 import io
+import errno
 
 from rtds.rscadutils import debug
 
@@ -44,6 +45,8 @@ class RSCADBase(object):
         self.watcher.start()
 
     def io(self, watcher, events):
+        debug('io({0}, {1}, {2})'.format(type(self),
+            type(watcher), type(events)))
         if events & pyev.EV_READ:
             self._handle_read(watcher, events)
         else:
@@ -54,11 +57,30 @@ class RSCADBase(object):
         self.reset(pyev.EV_READ|pyev.EV_WRITE)
 
     def _handle_read(self, watcher, events):
-        if hasattr(self, 'handle_read'):
-            self.handle_read(watcher, events)
-        else:
-            self.indata = self._file.read()
+        debug('_handle_read({0}, {1}, {2})'.format(type(self),
+            type(watcher), type(events)))
+        debug('Checking for handle_read')
+        try:
+            debug('Checking for handle_read 2')
+            if hasattr(self, 'handle_read'):
+                debug('Calling handle_read()')
+                self.handle_read(watcher, events)
+            else:
+                self.indata = self._file.read()
+                debug('No class specific read.  Indata is: {0}'.format(
+                    self.indata))
+        except socket.error, e:
+            debug('FUCK!')
+            if e.errno == errno.EWOULDBLOCK:
+                pass
+            else:
+                raise
+        except Exception, e:
+            debug('Unhandled exception: {0}'.format(type(e)))
+            raise
 
+
+        debug('indata is: {0}'.format(self.indata))
         self.indata = self._run_filters(self.indata)
         self._run_hooks('input', self.indata)
 
@@ -109,12 +131,12 @@ class RSCADnull(RSCADBase):
 
 class RSCADrtds(RSCADBase):
     def __init__(self, ipport, hooks):
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock = sockwrap(socket.AF_INET, socket.SOCK_STREAM)
         ## connect, then put into non-blocking
         self._sock.connect(ipport)
         self._sock.setblocking(0)
 
-        self._file = self._sock.makefile()
+        self._file = self._sock
 
         super(RSCADrtds, self).__init__(hooks)
 
@@ -125,4 +147,18 @@ class RSCADfile(RSCADBase):
         super(RSCADrtds, self).__init__(hooks)
 
 
+class sockwrap(socket.socket):
+    def read(self, *args):
+        d = ''
+        while True:
+            try:
+                d = '{0}{1}'.format(d, self.recv(1024))
+                debug('data read: {0}'.format(d))
+            except socket.error, e:
+                if e.errno == errno.EAGAIN:
+                    return d
+                else:
+                    raise
 
+    def write(self, *args):
+        return self.send(args)
