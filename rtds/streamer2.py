@@ -126,15 +126,17 @@ def handle_command(watcher, event):
         #   matches.
 
         if cmd in plugin_commands.keys():
-            plugin_commands[cmd](cmd)
+            plugin_commands[cmd](cmd, watcher.loop.data)
         else:
             # Ugh!  More LCD crap.  Everything should be 2.7 minimum
             cmds = dict((k.split(':')[1], v) for \
                     (k,v) in plugin_commands.items())
 
             if cmd in cmds.keys():
-                cmds[cmd](cmd)
+                cmds[cmd](cmd, watcher.loop.rscad)
             else:
                 debug('Unhandled command: {0}'.format(cmd))
 
 
+def ctlc(watcher, event):
+    watcher.loop.stop(signal.SIGINT)
