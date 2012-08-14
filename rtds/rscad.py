@@ -36,12 +36,13 @@ class RSCADBase(object):
         self.sequenceid = None
         self._need_synch = False
         self.indata = None
-        self.outdata = None
+        self.outdata = ''
 
         self.hooks = hooks
 
         loop = pyev.default_loop()
-        self.watcher = pyev.Io(self._file.fileno(), pyev.EV_READ, loop, self.io)
+        self.watcher = pyev.Io(self._file.fileno(), pyev.EV_READ, loop,
+                self.io, self)
         self.watcher.start()
 
     def io(self, watcher, events):
@@ -53,7 +54,9 @@ class RSCADBase(object):
             self._handle_write(watcher, events)
 
     def send(self, data):
+        debug(type(data))
         self.outdata = '{0}{1}'.format(self.outdata, data)
+        debug('outdata is now: {0}'.format(self.outdata))
         self.reset(pyev.EV_READ|pyev.EV_WRITE)
 
     def _handle_read(self, watcher, events):
@@ -87,14 +90,19 @@ class RSCADBase(object):
         self.indata = None
 
     def _handle_write(self, watcher, events):
+        debug('_handle_write(): outdata = type({0}): {1}'.format(
+            type(self.outdata), self.outdata))
         self._run_hooks('output', self.outdata)
+
+        debug('_handle_write() 2: outdata = type({0}): {1}'.format(
+            type(self.outdata), self.outdata))
 
         if hasattr(self, 'handle_write'):
             self.handle_write(watcher, events)
         else:
             self._file.write(self.outdata)
 
-        self.outdata = None
+        self.outdata = ''
         self.reset(pyev.EV_READ)
 
     ## Nedd special filter so data can be changed
@@ -160,5 +168,6 @@ class sockwrap(socket.socket):
                 else:
                     raise
 
-    def write(self, *args):
-        return self.send(args)
+    def write(self, data):
+        debug(data)
+        return self.send(data)

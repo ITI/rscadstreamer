@@ -1,10 +1,10 @@
 
-
 ## ugh!  Old python
 from __future__ import with_statement
 
 import os
 import sys
+import signal
 from io import FileIO
 
 import pyev
@@ -89,6 +89,13 @@ def streamer():
         RSCAD = rscad.rscadfactory(args.rscad, hooks)
         debug('RSCAD type: {0}'.format(type(RSCAD)))
 
+#        if debug:
+#            w = pyev.Signal(signal.SIGINT, main_loop, ctlc)
+#            w.start()
+#        else:
+#            #daemonize
+#            pass
+        main_loop.data = RSCAD
         main_loop.start()
 
     finally:
