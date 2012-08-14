@@ -26,6 +26,9 @@ def streamer():
     # Start by loading up available options
     args, other_args = util.parseopts()
 
+    ## Need the main loop right away
+    main_loop = pyev.default_loop(debug=args.debug)
+
     try:
         debug('Setting up command channel')
         pid = os.getpid()
@@ -37,7 +40,6 @@ def streamer():
                 print "Permission denied openeing pidfile: {0}".format(
                         args.pidfile)
                 sys.exit(e.errno)
-
 
         cmd_fifo = '/tmp/rscad_streamer_{0}'.format(pid)
 
@@ -52,7 +54,6 @@ def streamer():
         debug('loading plugins')
         plugin_args = loadPlugins(args.path, args.plugins, other_args)
 
-        main_loop = pyev.default_loop()
 
         # need these, even if empty
         hooks = {
