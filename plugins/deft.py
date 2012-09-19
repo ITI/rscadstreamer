@@ -1,5 +1,3 @@
-import sys
-
 from rtds.rscadplugin import RSCADPlugin
 from rtds.rscadutils import debug
 
