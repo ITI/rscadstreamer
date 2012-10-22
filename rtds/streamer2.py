@@ -140,7 +140,7 @@ def handle_command(watcher, event):
                     (k,v) in plugin_commands.items())
 
             if cmd in cmds.keys():
-                cmds[cmd](cmd, watcher.loop.rscad)
+                cmds[cmd](cmd, watcher.loop.data)
             else:
                 debug('Unhandled command: {0}'.format(cmd))
 
