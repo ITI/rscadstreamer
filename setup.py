@@ -1,12 +1,18 @@
 #!/usr/bin/env python
+"""
+RSCADStreamer install
+"""
 
 import os
-import sys
 
 from distutils.core import setup
 from distutils.command.install_scripts import install_scripts
 
 class my_install(install_scripts):
+    """
+    Custom install_script class to create symlinks
+    """
+
     def run(self):
         install_scripts.run(self)
 
@@ -15,7 +21,7 @@ class my_install(install_scripts):
                 os.sep.join([self.install_dir, 'rscadstreamer']),
                 os.sep.join([self.install_dir, 'rscad-control'])
                 )
-        except:
+        except Exception:
             pass
 
 
