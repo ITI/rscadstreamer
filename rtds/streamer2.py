@@ -90,13 +90,15 @@ def streamer():
         debug('RSCAD type: {0}'.format(type(RSCAD)))
 
 #        if debug:
-#            w = pyev.Signal(signal.SIGINT, main_loop, ctlc)
-#            w.start()
+        w = pyev.Signal(signal.SIGINT, main_loop, ctlc)
+        w.start()
 #        else:
 #            #daemonize
 #            pass
         main_loop.data = RSCAD
+        debug('Starting main loop')
         main_loop.start()
+        debug('FOOOOO')
 
     finally:
         try:
