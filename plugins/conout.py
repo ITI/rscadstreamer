@@ -18,8 +18,10 @@ class conout(RSCADPlugin):
 
         f.write('Stop;')
         if data == "kick_the_system":
+            # hardcoded
             f.write(r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case1\wscc_9bus_demostate1.sib");')
         else:
+            # hardcoded
             f.write(r'LoadBatch("C:\RTDS_USER\fileman\KERKdemo\Case2\wscc_9bus_demostate2.sib");')
         f.write('Start;')
         f.flush()
