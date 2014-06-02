@@ -2,6 +2,11 @@ import sys
 from rtds.rscadplugin import RSCADPlugin
 from rtds.rscadutils import debug, json_fix
 
+#####################################################
+## WARNING!!
+## This plugin implements an old plugin API and will not
+## function properly with the latest code.
+#####################################################
 
 class conout(RSCADPlugin):
 

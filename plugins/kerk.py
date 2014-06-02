@@ -3,6 +3,11 @@ from rtds.rscadutils import iptuple, json_fix
 
 import socket
 
+#####################################################
+## WARNING!!
+## This plugin implements an old plugin API and will not
+## function properly with the latest code.
+#####################################################
 
 class kerk(RSCADPlugin):
     def options(self, parser):
