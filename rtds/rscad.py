@@ -73,7 +73,7 @@ class RSCADBase(object):
                 debug('No class specific read.  Indata is: {0}'.format(
                     self.indata))
         except socket.error, e:
-            debug('FUCK!')
+            debug('BAD!')
             if e.errno == errno.EWOULDBLOCK:
                 pass
             else:
