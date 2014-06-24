@@ -1,1 +1,7 @@
-see extra/API for documentation on plugin API
+
+Rscadstreamer is an integration framework developed to provide the mechanism to connect a Real Time Digital Simulator and an external programatic environment.  By providing an easy to use API that experiment developers can use to implement data gathering and simulation control, as well as a means to interact with that data within an experiment, the researcher will be able to design and execute experiments that take advantage of the RTDS's capabilities directly in their experiments.
+
+
+
+See extra/API for documentation on plugin API
+See extra/rscadstreamer.docx for project details and usage manual
